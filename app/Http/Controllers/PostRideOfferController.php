@@ -33,7 +33,7 @@ class PostRideOfferController extends Controller
             'time' => 'required|date_format:H:i:s',
             'date' => 'required|date_format:Y-m-d',
             'title'=>'required',
-           // 'studentID' => 'required',
+
     
 
             
@@ -85,21 +85,28 @@ class PostRideOfferController extends Controller
 
         // Check if there are available seats
         if ($postRideOffer->seats > 0) {
-            
+           // Check if the offer has already been accepted by the current passenger
+        $passengerID = Auth::id();
+        if ($postRideOffer->passengers()->where('post_ride_offer_id', $id)->where('passenger_id', $passengerID)->exists()) {
+            return response()->json([
+                'message' => 'You have already accepted this offer.',
+            ]);
+        }
+        
 
             // Reduce the number of available seats by 1
             $postRideOffer->seats -= 1;
             $postRideOffer->save();
 
             // Associate the offer with the current passenger
-            $postRideOffer->passengerID = Auth::id();
+            $postRideOffer->passengers()->attach($passengerID);
 
             // Get the driver details
         $driverID = $postRideOffer->studentID;
         $driver = Student::findOrFail($driverID);
 
         // Get the passenger details
-        $passengerID = $postRideOffer->passengerID;
+        
         $passengerDetails = Student::findOrFail($passengerID);
 
 
@@ -117,8 +124,9 @@ class PostRideOfferController extends Controller
             ],
         ];
 
-        // Return the response
+        // Redirect to a success route or view
         return response()->json($responseData);
+
 
         } else {
             // No available seats

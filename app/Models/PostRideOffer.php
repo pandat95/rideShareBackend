@@ -25,7 +25,7 @@ class PostRideOffer extends Model
         'passenger_gender',
         'seats',
         'studentID',
-        'passengerID',
+        
         'manufacturer',
         'model',
         'color',
@@ -41,10 +41,11 @@ public function student()
     return $this->belongsTo(Student::class, 'studentID', 'stu_id');
 }
 
-public function passenger()
-{
-    return $this->belongsTo(Student::class, 'passengerID', 'stu_id');
-}
+public function passengers()
+    {
+        return $this->belongsToMany(Student::class, 'post_ride_offer_passenger', 'post_ride_offer_id', 'passenger_id')
+            ->withTimestamps();
+    }
 
 
 

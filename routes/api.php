@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PostRideOfferController;
+use App\Http\Controllers\PostRideRequestController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -20,6 +21,10 @@ use App\Http\Controllers\PostRideOfferController;
 // Post Ride Offer
 Route::middleware('auth:api')->post('/PostRideOffer', [PostRideOfferController::class, 'create']);
 Route::middleware('auth:api')->post('/PostRideOffer/{id}/accept', [PostRideOfferController::class, 'accept']);
+
+// Post Ride Request
+Route::middleware('auth:api')->post('/PostRideRequest', [PostRideRequestController::class, 'create']);
+Route::middleware('auth:api')->post('/PostRideRequest/{id}/accept', [PostRideRequestController::class, 'accept']);
 
 
 Route::post('/register', [RegisterController::class,'register']);

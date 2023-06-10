@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Student;
 
 class PostRideRequest extends Model
 {
-    use HasFactory;
+    
     protected $table='post_ride_request';
 
     protected $fillable=
@@ -21,24 +22,25 @@ class PostRideRequest extends Model
         'pickup_loc_longitude',
         'destination_latitude',
         'destination_longitude',
-        'gender',
+        'driver_gender',
         'studentID',
-        'driverID',
+        
         
     ];
 
-    public $incrementing=false;
+    
     
     protected $dates=['date','time'];
 
     public function student()
-    {
-        return $this->belongsTo(Student::class,'studentID','stu_id');
-    }
+{
+    return $this->belongsTo(Student::class, 'studentID', 'stu_id');
+}
 
-    public function driver()
+public function driver()
     {
-        return $this->belongsTo(Student::class,'driverID','stu_id');
+        return $this->belongsToMany(Student::class, 'post_ride_request_driver', 'post_ride_request_id', 'driver_id')
+            ->withTimestamps();
     }
 
 

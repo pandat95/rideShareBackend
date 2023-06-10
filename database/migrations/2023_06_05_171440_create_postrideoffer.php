@@ -31,8 +31,7 @@ return new class extends Migration
             $table->string('plates_number')->notNullable();
             $table->unsignedBigInteger('studentID')->nullable()->default(0);
             $table->foreign('studentID')->references('stu_id')->on('student');
-            $table->unsignedBigInteger('passengerID')->nullable()->default(0);
-            $table->foreign('passengerID')->references('stu_id')->on('student');
+    
         });
     }
 
