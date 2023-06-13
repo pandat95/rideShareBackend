@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Student;
+use App\Models\RideOffer;
 
 class RideRequestController extends Controller
 {
@@ -23,6 +24,8 @@ class RideRequestController extends Controller
             'driver_gender'=>'required',
             'smoking'=>'required|boolean',
             'eating'=>'required|boolean',
+            'pickup_loc_latitude' => 'required|numeric|between:-90,90',
+            'pickup_loc_longitude' => 'required|numeric|between:-180,180',
             
             
         ]);
@@ -43,80 +46,58 @@ class RideRequestController extends Controller
         // Save the  ride Request
         $RideRequest->save();
 
-        // Return a response or redirect as needed
-        return response()->json([
-            'message' => 'Ride Request created successfully',
-            
-        ]);
-        // Search for ride requests within a two-kilometer radius
-        /*$matchingRequests = DB::table('_ride_request')
-            ->select('_ride_request.*')
-            ->join('student', '_ride_request.passenger_id', '=', 'student.stu_id')
-            ->where('student.is_driver', false) // Only search for student ride requests
-            ->whereRaw("ST_Distance_Sphere(
-                POINT(_ride_request.pickup_loc_longitude, _ride_request.pickup_loc_latitude),
-                POINT(?, ?)
-            ) <= 2000", [$RideRequest->pickup_loc_longitude, $RideRequest->pickup_loc_latitude])
-            ->orderBy('_ride_request.created_at', 'asc') // Order by creation time to get the first match
-            ->get();
+         // Match ride requests within a two-kilometer radius
+    $matchingRequests = RideOffer::select('ride_offer.*', 'student.first_name', 'student.last_name', 'student.phone', 'ride_offer.pickup_loc_latitude', 'ride_offer.pickup_loc_longitude')
+    ->join('student', 'ride_offer.studentID', '=', 'student.stu_id')
+    ->whereRaw('ST_Distance_Sphere(
+        POINT(?, ?),
+        POINT(ride_offer.pickup_loc_latitude, ride_offer.pickup_loc_longitude)
+    ) <= 2000', [$RideRequest->pickup_loc_latitude, $RideRequest->pickup_loc_longitude])
+    ->where('student.gender', '=', $RideRequest->driver_gender)
+    ->where('ride_offer.smoking', '=', $RideRequest->smoking)
+    ->where('ride_offer.eating', '=', $RideRequest->eating)
+    ->get();
 
-            if ($matchingRequests->isEmpty()) {
-                // No matching ride requests found
-                return response()->json([
-                    'message' => 'No matching ride requests found',
-                ]);
-            } else {
-                // Apply matching rules and perform any other necessary checks
-                foreach ($matchingRequests as $matchingRequest) {
-                    // Retrieve the matching request's attributes
-                    $requestSmoking = $matchingRequest->smoking;
-                    $requestEating = $matchingRequest->eating;
-                    $requestPassengerGender = $matchingRequest->passenger_gender;
-            
-                    // Retrieve the ride Request's attributes
-                    $RequestSmoking = $RideRequest->smoking;
-                    $RequestEating = $RideRequest->eating;
-                    $RequestPassengerGender = $RideRequest->passenger_gender;
-            
-                    // Check if the rules match
-                    if ($requestSmoking === $RequestSmoking &&
-                        $requestEating === $RequestEating &&
-                        $requestPassengerGender === $RequestPassengerGender
-                    ) {
-                        // Associate the ride Request with the matched ride request
-                        $matchingRequest->RideRequests()->attach($RideRequest);
-            
-                        // Return a response with the matched details
-            return response()->json([
-                'message' => 'Ride Request created and matched with a ride request',
-                'passenger' => [
-                    'first_name' => $passengerFirstName,
-                    'last_name' => $passengerLastName,
-                    'phone' => $passengerPhone,
-                    'location' => $passengerLocation,
-                    'pickup_loc_latitude' => $matchingRequest->pickup_loc_latitude,
-                    'pickup_loc_longitude' => $matchingRequest->pickup_loc_longitude,
-                ],
-                'driver' => [
-                    'first_name' => $driverFirstName,
-                    'last_name' => $driverLastName,
-                    'phone' => $driverPhone,
-                    'vehicle' => [
-                        'manufacturer' => $vehicleManufacturer,
-                        'model' => $vehicleModel,
-                        'color' => $vehicleColor,
-                        'plates_number' => $vehiclePlatesNumber,
-                    ],
-                ],
-            ]);
-        }
-    }
-            
+// Perform further actions with the matching requests
+foreach ($matchingRequests as $matchingRequest) {
+    // Attach student ID from the ride request table to the ride offer
+    $RideRequest->rideOffers()->attach($matchingRequest->ride_offer_id);
+
+    // Send information to the student from the ride offer
+    // ...
+
+    // Send information to the student from the ride request
+    $rideOfferData = [
+        'first_name' => $matchingRequest->first_name,
+        'last_name' => $matchingRequest->last_name,
+        'phone' => $matchingRequest->phone,
+        'manufacturer' => $matchingRequest->manufacturer,
+        'model' => $matchingRequest->model,
+        'color' => $matchingRequest->color,
+        'plates_number' => $matchingRequest->plates_number,
+        'live_tracking_location' => $matchingRequest->pickup_loc_latitude . ',' . $matchingRequest->pickup_loc_longitude
+    ];
+
+    $rideRequestData = [
+        'first_name' => $RideRequest->student->first_name,
+        'last_name' => $RideRequest->student->last_name,
+        'phone' => $RideRequest->student->phone,
+        'location' => $RideRequest->pickup_loc_latitude . ',' . $RideRequest->pickup_loc_longitude
+    ];
+
+    // Send the information to the respective students using your preferred method (e.g., email, notification, etc.)
+    // ...
+}
+
+// Return a response or redirect as needed
+return response()->json([
+    'message' => 'Ride offer created successfully',
+    'rideOfferData' => $rideOfferData,
+    'rideRequestData'=> $rideRequestData,
+]);
                 // No matches found based on the rules
                 return response()->json([
                     'message' => 'No matches found based on the specified rules',
                 ]);
-            }*/
-    
-    }
+            }
 }

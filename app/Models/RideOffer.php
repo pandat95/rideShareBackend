@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Student;
+use App\Models\RideRequest;
 
 class RideOffer extends Model
 {
@@ -35,6 +36,14 @@ class RideOffer extends Model
 public function student()
 {
     return $this->belongsTo(Student::class, 'studentID', 'stu_id');
+}
+// public function rideRequests()
+// {
+//     return $this->belongsToMany(RideRequest::class, 'ride_offer_ride_request', 'ride_offer_id', 'ride_request_id');
+// }
+public function rideRequestStudents()
+{
+    return $this->belongsToMany(RideRequest::class, 'ride_offer_ride_request', 'ride_offer_id', 'ride_request_id');
 }
 
     

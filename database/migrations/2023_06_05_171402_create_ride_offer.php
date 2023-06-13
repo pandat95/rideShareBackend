@@ -16,10 +16,10 @@ return new class extends Migration
             $table->timestamps();
             $table->boolean('smoking')->notNullable();
             $table->boolean('eating')->notNullable();
-            $table->string('pickup_loc_latitude')->notNullable();
-            $table->string('pickup_loc_longitude')->notNullable();
-            $table->string('destination_latitude')->notNullable();
-            $table->string('destination_longitude')->notNullable();
+            $table->float('pickup_loc_latitude')->notNullable();
+            $table->float('pickup_loc_longitude')->notNullable();
+            $table->float('destination_latitude')->notNullable();
+            $table->float('destination_longitude')->notNullable();
             $table->unsignedInteger('passenger_gender')->notNullable();
             $table->string('manufacturer')->notNullable();
             $table->string('model')->notNullable();
