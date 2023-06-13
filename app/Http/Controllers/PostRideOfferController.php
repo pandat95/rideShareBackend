@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use App\Models\PostRideOffer;
 use Illuminate\Support\Facades\Validator;
-
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Student;
@@ -33,19 +31,12 @@ class PostRideOfferController extends Controller
             'time' => 'required|date_format:H:i:s',
             'date' => 'required|date_format:Y-m-d',
             'title'=>'required',
-
-    
-
-            
-            
         ]);
         
-
         // Create a new PostRideOffer instance
         $postRideOffer = new PostRideOffer();
         
-        // Set the attributes of the post ride offer
-    
+        // Set the attributes of the post ride offer    
         $postRideOffer->pickup_loc_latitude = $request->input('pickup_loc_latitude');
         $postRideOffer->pickup_loc_longitude = $request->input('pickup_loc_longitude');
         $postRideOffer->destination_latitude = $request->input('destination_latitude');
@@ -63,15 +54,11 @@ class PostRideOfferController extends Controller
         $postRideOffer->time = $time;
         $date = Carbon::createFromFormat('Y-m-d', $request->input('date'))->format('Y-m-d');
         $postRideOffer->date = $date;
-        $postRideOffer->studentID = Auth::id();
-        
-        
-        
+        $postRideOffer->studentID = Auth::id();        
         // Save the post ride offer
         $postRideOffer->save();
 
-        // Return a response or redirect as needed
-        
+        // Return a response 
         return response()->json([
             'message' => 'Post Ride offer created successfully',
             
@@ -124,7 +111,7 @@ class PostRideOfferController extends Controller
             ],
         ];
 
-        // Redirect to a success route or view
+        // Return a response
         return response()->json($responseData);
 
 

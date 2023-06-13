@@ -26,14 +26,11 @@ class RegisterController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
         // Retrieve the email and password from the request
         $email = $validatedData['email'];
         $password = $validatedData['password'];
         $hashedPassword = Hash::make($password);
-
         $student = $this->findMatchedStudent($email, $hashedPassword);
-
         if ($student) {
             $this->storeStudentData($student,$email, $hashedPassword);
             return response()->json(['message' => 'Registration successful']);
@@ -46,13 +43,10 @@ class RegisterController extends Controller
         $filePath = storage_path('app\public\uploads\StudentList.xlsx');
         $spreadsheet = IOFactory::load($filePath);
         $worksheet = $spreadsheet->getActiveSheet();
-        
-        $highestRow = $worksheet->getHighestRow();
-        
+        $highestRow = $worksheet->getHighestRow();        
         for ($row = 2; $row <= $highestRow; $row++) {
             $studentEmail = $worksheet->getCell('A' . $row)->getValue();
-            $studentPassword = $worksheet->getCell('B' . $row)->getValue();
-            
+            $studentPassword = $worksheet->getCell('B' . $row)->getValue();           
             if ($studentEmail == $email && Hash::check($studentPassword, $hashedPassword)) {
                 $student = [
                     'first_name' => $worksheet->getCell('C' . $row)->getValue(),
@@ -61,15 +55,12 @@ class RegisterController extends Controller
                     'gender' => $worksheet->getCell('F' . $row)->getValue(),
                     'phone' => $worksheet->getCell('G' . $row)->getValue(),
                     'address' => $worksheet->getCell('H' . $row)->getValue(),
-                ];
-                
+                ];   
                 return $student;
             }
-        }
-        
+        }       
         return null;
     }
-
     private function storeStudentData($student, $email, $hashedPassword)
     {
         $studentModel = new Student();
@@ -82,8 +73,7 @@ class RegisterController extends Controller
         $studentModel->password = $hashedPassword;
         $studentModel->address = $student['address'];
         $studentModel->remember_token = Str::random(10);
-        $studentModel->api_token=Str::random(80);
-    
+        $studentModel->api_token=Str::random(80); 
         $studentModel->save();
     
         
