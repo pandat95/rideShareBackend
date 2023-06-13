@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PostRideOfferController;
 use App\Http\Controllers\PostRideRequestController;
+use App\Http\Controllers\RideOfferController;
+use App\Http\Controllers\RideRequestController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -26,6 +28,11 @@ Route::middleware('auth:api')->post('/PostRideOffer/{id}/accept', [PostRideOffer
 Route::middleware('auth:api')->post('/PostRideRequest', [PostRideRequestController::class, 'create']);
 Route::middleware('auth:api')->post('/PostRideRequest/{id}/accept', [PostRideRequestController::class, 'accept']);
 
+// Ride Offer
+Route::middleware('auth:api')->post('/RideOffer', [RideOfferController::class, 'create']);
+
+// Ride Request
+Route::middleware('auth:api')->post('/RideRequest', [RideRequestController::class, 'create']);
 
 Route::post('/register', [RegisterController::class,'register']);
 Route::post('/logout', [LoginController::class, 'logout']);

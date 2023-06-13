@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('pickup_loc_longitude')->notNullable();
             $table->string('destination_latitude')->notNullable();
             $table->string('destination_longitude')->notNullable();
-            $table->integer('gender')->notNullable();
+            $table->unsignedInteger('driver_gender')->notNullable();
             $table->unsignedBigInteger('studentID');
             $table->foreign('studentID')->references('stu_id')->on('student')->onDelete('cascade')->onUpdate('cascade');
         });

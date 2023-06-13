@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('pickup_loc_longitude')->notNullable();
             $table->string('destination_latitude')->notNullable();
             $table->string('destination_longitude')->notNullable();
-            $table->integer('gender')->notNullable();
+            $table->unsignedInteger('passenger_gender')->notNullable();
             $table->string('manufacturer')->notNullable();
             $table->string('model')->notNullable();
             $table->string('color')->notNullable();
