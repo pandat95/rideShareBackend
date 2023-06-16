@@ -45,7 +45,7 @@ return [
             'provider' => 'student',
         ],
         'api' => [
-            'driver' => 'token',
+            'driver' => 'passport',
             'provider' => 'student',
             'hash' => false,
         ],

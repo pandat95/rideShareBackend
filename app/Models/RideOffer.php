@@ -37,10 +37,7 @@ public function student()
 {
     return $this->belongsTo(Student::class, 'studentID', 'stu_id');
 }
-// public function rideRequests()
-// {
-//     return $this->belongsToMany(RideRequest::class, 'ride_offer_ride_request', 'ride_offer_id', 'ride_request_id');
-// }
+
 public function rideRequestStudents()
 {
     return $this->belongsToMany(RideRequest::class, 'ride_offer_ride_request', 'ride_offer_id', 'ride_request_id');

@@ -21,9 +21,14 @@ class LoginController extends Controller
         $student = Auth::guard('student')->getProvider()->retrieveByCredentials($credentials);
 
         if ($student && Hash::check($credentials['password'], $student->getAuthPassword())) {
-            
+            $token = $student->api_token;
+            $firstname=$student->first_name;
+            $lastname=$student->last_name;
+            $phoneNumber=$student->phone;
+            $e_mail=$student->email;
 
-            return response()->json(['message' => 'Login Successful'],200);
+
+            return response()->json(['student' => $token,'first_name'=>$firstname,'last_name'=>$lastname,'phone'=>$phoneNumber,'email'=>$e_mail],200);
         } else {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
