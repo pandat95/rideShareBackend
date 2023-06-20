@@ -25,9 +25,11 @@ class PostRideRequestController extends Controller
             'driver_gender'=>'required',
             'smoking'=>'required|boolean',
             'eating'=>'required|boolean',
-            'time' => 'required|date_format:H:i:s',
-            'date' => 'required|date_format:Y-m-d',
+            // 'time' => 'required|date_format:H:i:s',
+            // 'date' => 'required|date_format:Y-m-d',
             'title'=>'required',
+            'Subtitle'=>'required',
+            'DateTime'=>'required',
 
     
 
@@ -46,13 +48,17 @@ class PostRideRequestController extends Controller
         $postRideRequest->destination_latitude = $request->input('destination_latitude');
         $postRideRequest->destination_longitude = $request->input('destination_longitude');
         $postRideRequest->title = $request->input('title');
+        $postRideRequest->Subtitle = $request->input('Subtitle');
         $postRideRequest->driver_gender = $request->input('driver_gender');
         $postRideRequest->smoking = filter_var($request->input('smoking'), FILTER_VALIDATE_BOOLEAN);
         $postRideRequest->eating = filter_var($request->input('eating'), FILTER_VALIDATE_BOOLEAN);
-        $time = Carbon::createFromFormat('H:i:s', $request->input('time'))->format('H:i:s');
-        $postRideRequest->time = $time;
-        $date = Carbon::createFromFormat('Y-m-d', $request->input('date'))->format('Y-m-d');
-        $postRideRequest->date = $date;
+        // $time = Carbon::createFromFormat('H:i:s', $request->input('time'))->format('H:i:s');
+        // $postRideRequest->time = $time;
+        // $date = Carbon::createFromFormat('Y-m-d', $request->input('date'))->format('Y-m-d');
+        // $postRideRequest->date = $date;
+        $carbonDateTime = Carbon::parse($request->input('DateTime'));
+        $formattedDateTime = $carbonDateTime->format('Y-m-d H:i:s');
+        $postRideRequest->DateTime = $formattedDateTime;
         $postRideRequest->studentID = Auth::id();
         
         

@@ -13,6 +13,12 @@ use App\Imports\StudentListImport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Str;
 
+use Laravel\Passport\ClientRepository;
+use Laravel\Passport\TokenRepository;
+use League\OAuth2\Server\AuthorizationServer;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
+
+
 
 
 
@@ -61,6 +67,19 @@ class RegisterController extends Controller
         }       
         return null;
     }
+    private $authorizationServer;
+    private $clientRepository;
+    private $tokenRepository;
+
+    public function __construct(
+        AuthorizationServer $authorizationServer,
+        ClientRepository $clientRepository,
+        TokenRepository $tokenRepository
+    ) {
+        $this->authorizationServer = $authorizationServer;
+        $this->clientRepository = $clientRepository;
+        $this->tokenRepository = $tokenRepository;
+    }
     private function storeStudentData($student, $email, $hashedPassword)
     {
         $studentModel = new Student();
@@ -73,8 +92,23 @@ class RegisterController extends Controller
         $studentModel->password = $hashedPassword;
         $studentModel->address = $student['address'];
         $studentModel->remember_token = Str::random(10);
-        $studentModel->api_token=Str::random(80); 
-        $studentModel->save();
+        // Generate an access token for the registered user
+        // Generate an access token for the registered user
+    //     $client = $this->clientRepository->personalAccessClient();
+    //     $token = $this->tokenRepository->create([
+    //     'user_id' => $studentModel->stu_id,
+    //      'client_id' => $client->id,
+    //      'name' => 'Personal Access Token',
+    //      'scopes' => [],
+    //      'revoked' => false,
+    //      'id'=>Str::random(80),
+         
+    //  ]);
+ 
+     // Save the access token in the api_token column
+     $studentModel->api_token = Str::random(80);
+     $studentModel->save();
+     
     
         
     

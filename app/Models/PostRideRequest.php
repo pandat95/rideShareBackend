@@ -14,8 +14,9 @@ class PostRideRequest extends Model
     protected $fillable=
     [
         'title',
-        'date',
-        'time',
+        // 'date',
+        // 'time',
+        'DateTime',
         'smoking',
         'eating',
         'pickup_loc_latitude',
@@ -24,13 +25,14 @@ class PostRideRequest extends Model
         'destination_longitude',
         'driver_gender',
         'studentID',
+        'Subtitle',
         
         
     ];
 
     
     
-    protected $dates=['date','time'];
+    protected $dates=['DateTime'];
 
     public function student()
 {

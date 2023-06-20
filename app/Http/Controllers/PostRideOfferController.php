@@ -28,9 +28,11 @@ class PostRideOfferController extends Controller
             'color'=>'required',
             'plates_number'=>'required',
             'seats'=>'required',
-            'time' => 'required|date_format:H:i:s',
-            'date' => 'required|date_format:Y-m-d',
+            // 'time' => 'required|date_format:H:i:s',
+            // 'date' => 'required|date_format:Y-m-d',
             'title'=>'required',
+            'Subtitle'=>'required',
+            'DateTime'=>'required',
         ]);
         
         // Create a new PostRideOffer instance
@@ -42,6 +44,7 @@ class PostRideOfferController extends Controller
         $postRideOffer->destination_latitude = $request->input('destination_latitude');
         $postRideOffer->destination_longitude = $request->input('destination_longitude');
         $postRideOffer->title = $request->input('title');
+        $postRideOffer->Subtitle = $request->input('Subtitle');
         $postRideOffer->passenger_gender = $request->input('passenger_gender');
         $postRideOffer->smoking = filter_var($request->input('smoking'), FILTER_VALIDATE_BOOLEAN);
         $postRideOffer->eating = filter_var($request->input('eating'), FILTER_VALIDATE_BOOLEAN);
@@ -50,10 +53,16 @@ class PostRideOfferController extends Controller
         $postRideOffer->color= $request->input('color');
         $postRideOffer->plates_number= $request->input('plates_number');
         $postRideOffer->seats=$request->input('seats');
-        $time = Carbon::createFromFormat('H:i:s', $request->input('time'))->format('H:i:s');
-        $postRideOffer->time = $time;
-        $date = Carbon::createFromFormat('Y-m-d', $request->input('date'))->format('Y-m-d');
-        $postRideOffer->date = $date;
+        // $time = Carbon::createFromFormat('H:i:s', $request->input('time'))->format('H:i:s');
+        // $postRideOffer->time = $time;
+        // $date = Carbon::createFromFormat('Y-m-d', $request->input('date'))->format('Y-m-d');
+        // $postRideOffer->date = $date;
+        $carbonDateTime = Carbon::parse($request->input('DateTime'));
+        $formattedDateTime = $carbonDateTime->format('Y-m-d H:i:s');
+        $postRideOffer->DateTime = $formattedDateTime;
+
+
+
         $postRideOffer->studentID = Auth::id();        
         // Save the post ride offer
         $postRideOffer->save();
