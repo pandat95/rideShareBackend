@@ -26,9 +26,10 @@ class LoginController extends Controller
             $lastname=$student->last_name;
             $phoneNumber=$student->phone;
             $e_mail=$student->email;
+            $stu_id=$student->stu_id;
             $token = $student->createToken('')->accessToken;
 
-            return response()->json(['student' => $token,'first_name'=>$firstname,'last_name'=>$lastname,'phone'=>$phoneNumber,'email'=>$e_mail],200);
+            return response()->json(['student' => $token,'first_name'=>$firstname,'last_name'=>$lastname,'phone'=>$phoneNumber,'email'=>$e_mail,'stu_id'=>$stu_id],200);
         } else {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }

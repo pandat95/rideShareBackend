@@ -23,10 +23,13 @@ use App\Http\Controllers\RideRequestController;
 // Post Ride Offer
 Route::middleware('auth:api')->post('/PostRideOffer', [PostRideOfferController::class, 'create']);
 Route::middleware('auth:api')->post('/PostRideOffer/{id}/accept', [PostRideOfferController::class, 'accept']);
-
+Route::get('/PostRideOffer/index', [PostRideOfferController::class, 'index']);
+Route::middleware('auth:api')->delete('/PostRideOffer/{id}/destroy', [PostRideOfferController::class, 'destroy']);
 // Post Ride Request
 Route::middleware('auth:api')->post('/PostRideRequest', [PostRideRequestController::class, 'create']);
 Route::middleware('auth:api')->post('/PostRideRequest/{id}/accept', [PostRideRequestController::class, 'accept']);
+Route::get('/PostRideRequest/index', [PostRideRequestController::class, 'index']);
+Route::middleware('auth:api')->delete('/PostRideRequest/{id}/destroy', [PostRideRequestController::class, 'destroy']);
 
 // Ride Offer
 Route::middleware('auth:api')->post('/RideOffer', [RideOfferController::class, 'create']);

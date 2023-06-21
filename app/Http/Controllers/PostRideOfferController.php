@@ -14,6 +14,7 @@ class PostRideOfferController extends Controller
 {
     public function create(Request $request)
     {
+        
        // Validate the request data
         $validatedData = $request->validate([
             'pickup_loc_latitude' => 'required',
@@ -34,7 +35,7 @@ class PostRideOfferController extends Controller
             'Subtitle'=>'required',
             'DateTime'=>'required',
         ]);
-        
+        // dd($request->all(), $request->header('Authorization'));
         // Create a new PostRideOffer instance
         $postRideOffer = new PostRideOffer();
         
@@ -131,5 +132,39 @@ class PostRideOfferController extends Controller
                 
             ]);
         }
+    }
+    public function index()
+    {
+    
+        $offerPosts = postrideoffer::all();
+
+        // Create an empty array to hold the posts
+        $posts = [];
+    
+        // Loop through each post and extract the necessary fields
+        foreach ($offerPosts as $offerPost) {
+            $id = $offerPost->id;
+            $title = $offerPost->title;
+            $subtitle = $offerPost->Subtitle;
+            $DateTime= $offerPost->DateTime;
+            $student=$offerPost->studentID;
+    
+            // Add the post data to the posts array
+            $posts[] = [
+                'id' => $id,
+                'title' => $title,
+                'subtitle' => $subtitle,
+                'DateTime'=>$DateTime,
+                'studentID'=>$student
+            ];
+        }
+    
+        // Return the posts array as JSON response
+        return response()->json($posts, 200);
+    }
+    public function destroy($id)
+    {
+        postrideoffer::destroy($id);
+        return response()->json('Post Deleted Successfully', 200);
     }
 }

@@ -113,12 +113,45 @@ class PostRideRequestController extends Controller
             'last_name' => $passenger->last_name,
             'phone' => $passenger->phone,
         ],
-    ];
+    ];}
+        public function index()
+        {
+    
+        $requestPosts = postriderequest::all();
 
-    // Return the response
-    return response()->json($responseData);
+        // Create an empty array to hold the posts
+        $posts = [];
+    
+        // Loop through each post and extract the necessary fields
+        foreach ($requestPosts as $requestPost) {
+            $id = $requestPost->id;
+            $title = $requestPost->title;
+            $subtitle = $requestPost->Subtitle;
+            $DateTime= $requestPost->DateTime;
+            $student=$requestPost->studentID;
+    
+            // Add the post data to the posts array
+            $posts[] = [
+                'id' => $id,
+                'title' => $title,
+                'subtitle' => $subtitle,
+                'DateTime'=>$DateTime,
+                'studentID'=>$student
+            ];
+        }
+    
+        // Return the posts array as JSON response
+        return response()->json($posts, 200);
+    }
+
+    public function destroy($id)
+    {
+        postriderequest::destroy($id);
+        return response()->json('Post Deleted Successfully', 200);
+        
+    }
 
 
-        } 
+        
     }
 
