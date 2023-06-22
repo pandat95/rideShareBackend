@@ -16,11 +16,11 @@ return new class extends Migration
             $table->timestamps();
             $table->boolean('smoking')->notNullable();
             $table->boolean('eating')->notNullable();
-            $table->float('pickup_loc_latitude')->notNullable();
-            $table->float('pickup_loc_longitude')->notNullable();
-            $table->float('destination_latitude')->notNullable();
-            $table->float('destination_longitude')->notNullable();
-            $table->unsignedInteger('driver_gender')->notNullable();
+            $table->decimal('pickup_loc_latitude',15,12)->notNullable();
+            $table->decimal('pickup_loc_longitude',15,12)->notNullable();
+            $table->decimal('destination_latitude',15,12)->notNullable();
+            $table->decimal('destination_longitude',15,12)->notNullable();
+            $table->string('driver_gender')->notNullable();
             $table->unsignedBigInteger('studentID');
             $table->foreign('studentID')->references('stu_id')->on('student')->onDelete('cascade')->onUpdate('cascade');
         });

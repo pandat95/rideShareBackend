@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Student;
 use App\Models\RideOffer;
+
 class RideRequest extends Model
 {
     

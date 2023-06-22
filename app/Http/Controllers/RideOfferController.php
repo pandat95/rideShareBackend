@@ -7,9 +7,11 @@ use Illuminate\Http\Request;
 use App\Models\RideOffer;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+
 use App\Models\Student;
 use App\Models\RideRequest;
+use Geoly\Geoly;
+use Illuminate\Support\Facades\DB;
 
 
 class RideOfferController extends Controller
@@ -60,58 +62,80 @@ class RideOfferController extends Controller
             
         // ]);
         // Match ride requests within a two-kilometer radius
-    $matchingRequests = RideRequest::select('ride_request.*', 'student.first_name', 'student.last_name', 'student.phone', 'ride_request.pickup_loc_latitude', 'ride_request.pickup_loc_longitude')
-    ->join('student', 'ride_request.studentID', '=', 'student.stu_id')
-    ->whereRaw('ST_Distance_Sphere(
-        POINT(?, ?),
-        POINT(ride_request.pickup_loc_latitude, ride_request.pickup_loc_longitude)
-    ) <= 2000', [$RideOffer->pickup_loc_latitude, $RideOffer->pickup_loc_longitude])
-    ->where('student.gender', '=', $RideOffer->passenger_gender)
-    ->where('ride_request.smoking', '=', $RideOffer->smoking)
-    ->where('ride_request.eating', '=', $RideOffer->eating)
-    ->get();
+        $pickupLatitude = $RideOffer->pickup_loc_latitude;
+        $pickupLongitude = $RideOffer->pickup_loc_longitude;
+
+        $matchingRequests = DB::table('ride_request')
+            ->join('student', 'ride_request.studentID', '=', 'student.stu_id')
+            ->select('ride_request.*', 'student.first_name', 'student.last_name', 'student.phone')
+            ->selectRaw("(6371 * acos(cos(radians($pickupLatitude)) * cos(radians(ride_request.pickup_loc_latitude)) * cos(radians(ride_request.pickup_loc_longitude) - radians($pickupLongitude)) + sin(radians($pickupLatitude)) * sin(radians(ride_request.pickup_loc_latitude)))) AS distance")
+            ->having('distance', '<=', 2) // 2km radius
+            ->where(function ($query) use ($RideOffer) {
+                $query->where('student.gender', '=', $RideOffer->passenger_gender);
+                    
+            })
+            ->where('ride_request.smoking', '=', $RideOffer->smoking)
+            ->where('ride_request.eating', '=', $RideOffer->eating)
+            ->get();
+
+            $matchingRequestArray = [];
+
+        foreach ($matchingRequests as $matchingRequest) {
+            $id = $matchingRequest->id;
+            
+            $studentID = $matchingRequest->studentID;
+    
+            $matchingRequestArray[] = [
+                'id' => $id, 
+                'studentID' => $studentID
+            ];
+        }
+    
+        return response()->json($matchingRequestArray, 200);
+
+
+
+
+
+
+    // $matchingRequests = RideRequest::select('ride_request.*', 'student.first_name', 'student.last_name', 'student.phone', 'ride_request.pickup_loc_latitude', 'ride_request.pickup_loc_longitude')
+    // ->join('student', 'ride_request.studentID', '=', 'student.stu_id')
+    // ->whereRaw('ST_Distance_Sphere(
+    //     POINT(?, ?),
+    //     POINT(ride_request.pickup_loc_latitude, ride_request.pickup_loc_longitude)
+    // ) <= 2000', [$RideOffer->pickup_loc_latitude, $RideOffer->pickup_loc_longitude])
+    // ->where('student.gender', '=', $RideOffer->passenger_gender||$RideOffer->passenger_gender='No specific')
+    // ->where('ride_request.smoking', '=', $RideOffer->smoking)
+    // ->where('ride_request.eating', '=', $RideOffer->eating)
+    // ->get();
 
 // Perform further actions with the matching requests
-foreach ($matchingRequests as $matchingRequest) {
-    // Attach student ID from the ride request table to the ride offer
-    $RideOffer->rideRequestStudents()->attach($matchingRequest->ride_request_id);
+// foreach ($matchingRequests as $matchingRequest) {
+//     // Attach student ID from the ride request table to the ride offer
+//     $RideOffer->rideOffers()->attach($matchingRequest->id);
 
-    // Send information to the student from the ride offer
-    // ...
-
-    // Send information to the student from the ride request
-    $rideOfferData = [
-        'first_name' => $RideOffer->student->first_name,
-        'last_name' => $RideOffer->student->last_name,
-        'phone' => $RideOffer->student->phone,
-        'manufacturer' => $RideOffer->manufacturer,
-        'model' => $RideOffer->model,
-        'color' => $RideOffer->color,
-        'plates_number' => $RideOffer->plates_number,
-        'live_tracking_location' => $RideOffer->pickup_loc_latitude . ',' . $RideOffer->pickup_loc_longitude
-    ];
-
-    $rideRequestData = [
-        'first_name' => $matchingRequest->first_name,
-        'last_name' => $matchingRequest->last_name,
-        'phone' => $matchingRequest->phone,
-        'location' => $matchingRequest->pickup_loc_latitude . ',' . $matchingRequest->pickup_loc_longitude
-    ];
-
-    // Send the information to the respective students using your preferred method (e.g., email, notification, etc.)
-    // ...
-}
-
-// Return a response or redirect as needed
-return response()->json([
-    'message' => 'Ride offer created successfully',
-    'rideOfferData' => $rideOfferData,
-    'rideRequestData'=> $rideRequestData,
-]);
-                // No matches found based on the rules
-                return response()->json([
-                    'message' => 'No matches found based on the specified rules',
-                ]);
+//     // Return a response or redirect as needed
+//     return response()->json([
+//         'message' => 'Ride Request created successfully',
+//         'rideRequestData' => [
+//             'first_name' => $matchingRequest->first_name,
+//             'last_name' => $matchingRequest->last_name,
+//             'phone' => $matchingRequest->phone,
+//             // Add other relevant data here
+//         ],
+//         'rideOfferData' => [
+//             'first_name' => $RideOffer->student->first_name,
+//             'last_name' => $RideOffer->student->last_name,
+//             'phone' => $RideOffer->student->phone,
+//             'color'=>$RideOffer->color,
+//             // Add other relevant data here
+//         ],
+//     ]);
+// }
+//                 // No matches found based on the rules
+//                 return response()->json([
+//                     'message' => 'No matches found based on the specified rules',
+//                 ]);
             }
     
     }

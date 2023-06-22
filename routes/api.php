@@ -33,9 +33,11 @@ Route::middleware('auth:api')->delete('/PostRideRequest/{id}/destroy', [PostRide
 
 // Ride Offer
 Route::middleware('auth:api')->post('/RideOffer', [RideOfferController::class, 'create']);
+Route::get('/RideOffer/index', [RideOfferController::class, 'index']);
 
 // Ride Request
 Route::middleware('auth:api')->post('/RideRequest', [RideRequestController::class, 'create']);
+Route::get('/RideRequest/index', [RideRequestController::class, 'index']);
 
 Route::post('/register', [RegisterController::class,'register']);
 Route::post('/logout', [LoginController::class, 'logout']);

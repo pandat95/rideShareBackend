@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Student;
 use App\Models\RideRequest;
 
+
 class RideOffer extends Model
 {
     
@@ -28,6 +29,7 @@ class RideOffer extends Model
         'color',
         'plates_number',
     ];
+   
 
     
     public $incrementing = false;
