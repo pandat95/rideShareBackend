@@ -76,6 +76,7 @@ class RideOfferController extends Controller
             })
             ->where('ride_request.smoking', '=', $RideOffer->smoking)
             ->where('ride_request.eating', '=', $RideOffer->eating)
+            ->where('student.stu_id','!=',$RideOffer->studentID)
             ->get();
 
             $matchingRequestArray = [];

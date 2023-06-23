@@ -137,6 +137,7 @@ class PostRideOfferController extends Controller
     {
     
         $offerPosts = postrideoffer::all();
+        
 
         // Create an empty array to hold the posts
         $posts = [];
@@ -148,6 +149,18 @@ class PostRideOfferController extends Controller
             $subtitle = $offerPost->Subtitle;
             $DateTime= $offerPost->DateTime;
             $student=$offerPost->studentID;
+            $car=$offerPost->manufacturer;
+            $color=$offerPost->color;
+            $seats=$offerPost->seats;
+            $model=$offerPost->model;
+            $plates_number=$offerPost->plates_number;
+            // Fetch the student name based on the student ID
+            $firstName = student::where('stu_id','=', $student)->value('first_name');
+            $lastName = student::where('stu_id','=', $student)->value('last_name');
+            $pickupLat=$offerPost->pickup_loc_latitude;
+            $pickupLong=$offerPost->pickup_loc_longitude;
+            $destLat=$offerPost->destination_latitude;
+            $destLong=$offerPost->destination_longitude;
     
             // Add the post data to the posts array
             $posts[] = [
@@ -155,7 +168,19 @@ class PostRideOfferController extends Controller
                 'title' => $title,
                 'subtitle' => $subtitle,
                 'DateTime'=>$DateTime,
-                'studentID'=>$student
+                'studentID'=>$student,
+                'FName'=>$firstName,
+                'LName'=>$lastName,
+                'carCompany'=>$car,
+                'model'=>$model,
+                'color'=>$color,
+                'seats'=>$seats,
+                'platesNumber'=>$plates_number,
+                'pickupLat'=>$pickupLat,
+                'pickupLong'=>$pickupLong,
+                'destLat'=>$destLat,
+                'destLong'=>$destLong
+                
             ];
         }
     

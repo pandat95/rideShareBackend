@@ -129,6 +129,12 @@ class PostRideRequestController extends Controller
             $subtitle = $requestPost->Subtitle;
             $DateTime= $requestPost->DateTime;
             $student=$requestPost->studentID;
+            $firstName = student::where('stu_id','=', $student)->value('first_name');
+            $lastName = student::where('stu_id','=', $student)->value('last_name');
+            $pickupLat=$requestPost->pickup_loc_latitude;
+            $pickupLong=$requestPost->pickup_loc_longitude;
+            $destLat=$requestPost->destination_latitude;
+            $destLong=$requestPost->destination_longitude;
     
             // Add the post data to the posts array
             $posts[] = [
@@ -136,7 +142,13 @@ class PostRideRequestController extends Controller
                 'title' => $title,
                 'subtitle' => $subtitle,
                 'DateTime'=>$DateTime,
-                'studentID'=>$student
+                'studentID'=>$student,
+                'FName'=>$firstName,
+                'LName'=>$lastName,
+                'pickupLat'=>$pickupLat,
+                'pickupLong'=>$pickupLong,
+                'destLat'=>$destLat,
+                'destLong'=>$destLong
             ];
         }
     

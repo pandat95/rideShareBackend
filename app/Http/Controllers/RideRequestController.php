@@ -66,6 +66,7 @@ class RideRequestController extends Controller
     })
     ->where('ride_offer.smoking', '=', $RideRequest->smoking)
     ->where('ride_offer.eating', '=', $RideRequest->eating)
+    ->where('student.stu_id','!=',$RideRequest->studentID)
     ->get();
 
         
