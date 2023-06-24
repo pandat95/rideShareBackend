@@ -44,6 +44,9 @@ public function rideRequestStudents()
 {
     return $this->belongsToMany(RideRequest::class, 'ride_offer_ride_request', 'ride_offer_id', 'ride_request_id');
 }
-
+public function passenger()
+{
+    return $this->belongsToMany(Student::class,'ride_offer_student', 'ride_offer_id', 'student_id');
+}
     
 }

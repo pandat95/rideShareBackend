@@ -83,61 +83,58 @@ class RideOfferController extends Controller
 
         foreach ($matchingRequests as $matchingRequest) {
             $id = $matchingRequest->id;
-            
             $studentID = $matchingRequest->studentID;
+            $firstName = student::where('stu_id','=', $studentID)->value('first_name');
+            $lastName = student::where('stu_id','=', $studentID)->value('last_name');
+            $pickupLat=$matchingRequest->pickup_loc_latitude;
+            $pickupLong=$matchingRequest->pickup_loc_longitude;
+            $destLat=$matchingRequest->destination_latitude;
+            $destLong=$matchingRequest->destination_longitude;
+            $Phone = student::where('stu_id','=', $studentID)->value('phone');
+            $car=$RideOffer->manufacturer;
+            $color=$RideOffer->color;
+            $model=$RideOffer->model;
+            $plates_number=$RideOffer->plates_number;
     
             $matchingRequestArray[] = [
                 'id' => $id, 
-                'studentID' => $studentID
+                'studentID' => $studentID,
+                'FName'=>$firstName,
+                'LName'=>$lastName,
+                'pickupLat'=>$pickupLat,
+                'pickupLong'=>$pickupLong,
+                'destLat'=>$destLat,
+                'destLong'=>$destLong,
+                'carCompany'=>$car,
+                'model'=>$model,
+                'color'=>$color,
+                'platesNumber'=>$plates_number,
+                'phone'=>$Phone
             ];
         }
     
         return response()->json($matchingRequestArray, 200);
+        //return response()->json('did it work',200);
 
 
-
-
-
-
-    // $matchingRequests = RideRequest::select('ride_request.*', 'student.first_name', 'student.last_name', 'student.phone', 'ride_request.pickup_loc_latitude', 'ride_request.pickup_loc_longitude')
-    // ->join('student', 'ride_request.studentID', '=', 'student.stu_id')
-    // ->whereRaw('ST_Distance_Sphere(
-    //     POINT(?, ?),
-    //     POINT(ride_request.pickup_loc_latitude, ride_request.pickup_loc_longitude)
-    // ) <= 2000', [$RideOffer->pickup_loc_latitude, $RideOffer->pickup_loc_longitude])
-    // ->where('student.gender', '=', $RideOffer->passenger_gender||$RideOffer->passenger_gender='No specific')
-    // ->where('ride_request.smoking', '=', $RideOffer->smoking)
-    // ->where('ride_request.eating', '=', $RideOffer->eating)
-    // ->get();
-
-// Perform further actions with the matching requests
-// foreach ($matchingRequests as $matchingRequest) {
-//     // Attach student ID from the ride request table to the ride offer
-//     $RideOffer->rideOffers()->attach($matchingRequest->id);
-
-//     // Return a response or redirect as needed
-//     return response()->json([
-//         'message' => 'Ride Request created successfully',
-//         'rideRequestData' => [
-//             'first_name' => $matchingRequest->first_name,
-//             'last_name' => $matchingRequest->last_name,
-//             'phone' => $matchingRequest->phone,
-//             // Add other relevant data here
-//         ],
-//         'rideOfferData' => [
-//             'first_name' => $RideOffer->student->first_name,
-//             'last_name' => $RideOffer->student->last_name,
-//             'phone' => $RideOffer->student->phone,
-//             'color'=>$RideOffer->color,
-//             // Add other relevant data here
-//         ],
-//     ]);
-// }
-//                 // No matches found based on the rules
-//                 return response()->json([
-//                     'message' => 'No matches found based on the specified rules',
-//                 ]);
             }
-    
+            public function accept($id)
+            {
+                $RideOffer= RideOffer::findOrFail($id);
+                if ($RideOffer->passenger()->exists()) {
+                    return response()->json([
+                        'message' => 'This offer has already been accepted.',
+                    ]);
+                }
+            
+                $passengerID= Auth::id();
+                $RideOffer->passenger()->attach($passengerID);
+                $passengerDetails = Student::findOrFail($passengerID);
+                $driverID = $RideOffer->studentID;
+                $driver = Student::findOrFail($driverID);
+                return response()->json('Ride Offer Accepted Successfully', 200);
+            
+            
+            }
     }
 

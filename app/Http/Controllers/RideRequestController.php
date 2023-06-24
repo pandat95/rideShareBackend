@@ -75,17 +75,58 @@ class RideRequestController extends Controller
 
         foreach ($matchingRequests as $matchingRequest) {
             $id = $matchingRequest->id;
-            
             $studentID = $matchingRequest->studentID;
+            $firstName = student::where('stu_id','=', $studentID)->value('first_name');
+            $lastName = student::where('stu_id','=', $studentID)->value('last_name');
+            $pickupLat=$matchingRequest->pickup_loc_latitude;
+            $pickupLong=$matchingRequest->pickup_loc_longitude;
+            $destLat=$matchingRequest->destination_latitude;
+            $destLong=$matchingRequest->destination_longitude;
+            $Phone = student::where('stu_id','=', $studentID)->value('phone');
+            $car=$matchingRequest->manufacturer;
+            $color=$matchingRequest->color;
+            $model=$matchingRequest->model;
+            $plates_number=$matchingRequest->plates_number;
+
     
             $matchingRequestArray[] = [
                 'id' => $id, 
-                'studentID' => $studentID
+                'studentID' => $studentID,
+                'FName'=>$firstName,
+                'LName'=>$lastName,
+                'pickupLat'=>$pickupLat,
+                'pickupLong'=>$pickupLong,
+                'destLat'=>$destLat,
+                'destLong'=>$destLong,
+                'carCompany'=>$car,
+                'model'=>$model,
+                'color'=>$color,
+                'platesNumber'=>$plates_number,
+                'phone'=>$Phone
+
             ];
         }
     
         return response()->json($matchingRequestArray, 200);
 
         
+}
+public function accept($id)
+{
+    $RideRequest= RideRequest::findOrFail($id);
+    if ($RideRequest->driver()->exists()) {
+        return response()->json([
+            'message' => 'This request has already been accepted.',
+        ]);
+    }
+
+    $driverID= Auth::id();
+    $RideRequest->driver()->attach($driverID);
+    $driverDetails = Student::findOrFail($driverID);
+    $passengerID = $RideRequest->studentID;
+    $passenger = Student::findOrFail($passengerID);
+    return response()->json('Ride Request Accepted Successfully', 200);
+
+
 }
 }
